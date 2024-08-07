@@ -1,3 +1,7 @@
+
+// make a class for motor and functions
+// Use #define for variables that do not change...
+
 uint8_t input_1_pin = 13;
 uint8_t input_2_pin = 12;
 uint8_t input_3_pin = 11;
@@ -11,6 +15,7 @@ uint8_t ir_2_pin = 7;
 uint8_t ir_3_pin = 9;
 
 uint8_t motor_speed_pot = A0;
+uint8_t steering_speed_pot = A1;
 
 bool motor_1_dir = true;
 bool motor_2_dir = true;
@@ -21,6 +26,7 @@ bool ir_3_state = true;
 
 uint8_t default_speed = 80;
 uint8_t motor_speed = default_speed;
+uint8_t steering_speed = default_speed * 0.5;
 int8_t direction = 0;
 
 uint8_t R_target_speed = motor_speed; // 'motor_speed'
@@ -67,6 +73,7 @@ void setup() {
 void loop() {
   
   motor_speed = map(analogRead(motor_speed_pot), 0, 1023, 0, 255);
+  steering_speed = map(analogRead(steering_speed_pot), 0, 1023, 0, 255);
 
   ir_1_state = digitalRead(ir_1_pin);
   ir_2_state = digitalRead(ir_2_pin);
@@ -79,7 +86,7 @@ void loop() {
       R_target_speed = motor_speed;
       R_initial_timestamp = current_millis;
 
-      L_target_speed = 100;
+      L_target_speed = steering_speed;
       L_initial_timestamp = current_millis;
     }
   }
@@ -88,7 +95,7 @@ void loop() {
     if (direction != 1) {
       direction = 1;
       
-      R_target_speed = 100;
+      R_target_speed = steering_speed;
       R_initial_timestamp = current_millis;
 
       L_target_speed = motor_speed;
@@ -106,7 +113,15 @@ void loop() {
       L_target_speed = motor_speed;
       L_initial_timestamp = current_millis;
     }
-  }
+  } /* else if (ir_3_state == false && ir_1_state == true && ir_2_state == true) {
+    // Keep the motor equal speed, travels relatively straight
+
+    R_target_speed = 0;
+    R_initial_timestamp = current_millis;
+
+    L_target_speed = 0;
+    L_initial_timestamp = current_millis;
+  } */
 
   // Motor Control Logic 
   if (R_target_speed == 0) {
@@ -154,6 +169,8 @@ void loop() {
 
   Serial.print("\nmotor_speed: ");
   Serial.println(motor_speed);
+  Serial.print("steering_speed: ");
+  Serial.println(steering_speed);
 
   Serial.println("-----------------------------");
 
