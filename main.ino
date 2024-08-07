@@ -1,21 +1,20 @@
 
-// make a class for motor and functions
-// Use #define for variables that do not change...
+// Create a class for motor and functions
 
-uint8_t input_1_pin = 13;
-uint8_t input_2_pin = 12;
-uint8_t input_3_pin = 11;
-uint8_t input_4_pin = 10;
+const uint8_t input_1_pin = 13;
+const uint8_t input_2_pin = 12;
+const uint8_t input_3_pin = 11;
+const uint8_t input_4_pin = 10;
 
-uint8_t motor_1_pwm_pin = 6;
-uint8_t motor_2_pwm_pin = 5;
+const uint8_t motor_1_pwm_pin = 6;
+const uint8_t motor_2_pwm_pin = 5;
 
-uint8_t ir_1_pin = 8;
-uint8_t ir_2_pin = 7;
-uint8_t ir_3_pin = 9;
+const uint8_t ir_1_pin = 8;
+const uint8_t ir_2_pin = 7;
+const uint8_t ir_3_pin = 9;
 
-uint8_t motor_speed_pot = A0;
-uint8_t steering_speed_pot = A1;
+const uint8_t motor_speed_pot = A0;
+const uint8_t steering_speed_pot = A1;
 
 bool motor_1_dir = true;
 bool motor_2_dir = true;
@@ -43,13 +42,12 @@ uint16_t L_acceleration_timestamp; // instantaneous timestamp of motor 'L' accel
 uint16_t L_initial_timestamp; // timestamp at beginning of motor 'L' acceleration
 uint8_t L_initial_speed = default_speed; // the intial speed of motor 'L' at beginning of acceleration
 
-uint16_t current_millis = millis();
+uint16_t current_millis = millis(); // returns the time since the program has been running
 
 void setup() {
 
   Serial.begin(115200);
 
-  // ...
   pinMode(input_1_pin, OUTPUT);
   pinMode(input_2_pin, OUTPUT);
   pinMode(input_3_pin, OUTPUT);
@@ -103,25 +101,25 @@ void loop() {
     }
   }
 
-  if ((ir_3_state == false && (ir_1_state == true) && ir_2_state == true) || (ir_1_state == true && ir_2_state == true)) {
+  if ((ir_3_state == false && ir_1_state == true && ir_2_state == true) || (ir_1_state == true && ir_2_state == true)) {
     if (direction != 0) {
       direction = 0;
-
+      
       R_target_speed = motor_speed;
       R_initial_timestamp = current_millis;
 
       L_target_speed = motor_speed;
       L_initial_timestamp = current_millis;
     }
-  } /* else if (ir_3_state == false && ir_1_state == true && ir_2_state == true) {
+  } else if (ir_3_state == true && ir_1_state == true && ir_2_state == true) {
     // Keep the motor equal speed, travels relatively straight
 
-    R_target_speed = 0;
+    R_target_speed = motor_speed;
     R_initial_timestamp = current_millis;
 
-    L_target_speed = 0;
+    L_target_speed = motor_speed;
     L_initial_timestamp = current_millis;
-  } */
+  }
 
   // Motor Control Logic 
   if (R_target_speed == 0) {
